@@ -10,28 +10,53 @@ tri_mean <-  function(myvec){
   return(as.numeric(res))
 }
 
+first_q <- function(myvec) {
+  return(as.numeric(quantile(myvec)[2]))
+}
 
-header <- c("delivered", "no_of_users", "sum_seen", "mean_seen", "mean_clicked", "percentage_seen", "percentage_clicked", "percentage_clicked_vs_seen", 
-            "msg", "conv", "reply", "no_reply", "age")
+third_q <- function(myvec) {
+  return(as.numeric(quantile(myvec)[2]))
+}
+
+header <- c("delivered", "no_of_users" , "seen_min", "seen_tri_mean", "seen_max", 
+            "clicked_min", "clicked_tri_mean", "clicked_max", "percentage_seen", "percentage_clicked",
+            "msg_min", "msg_tri_mean", "msg_max", "conv_min", "conv_tri_mean", "conv_max",
+            "age_min", "age_tri_mean", "age_max")
 
 write(header, file = paste(current_dir,"analysis_final.csv", sep = ""), sep = ",", ncolumns =  length(header))
 
 for (val in min(tab$delivered):max(tab$delivered) ){
 
     temp <- tab[tab$delivered == val,]
-    sum_seen <- sum(temp$seen)
-    mean_seen <- tri_mean(temp$seen)
-    mean_clicked <- tri_mean(temp$clicked)
+    
+    seen_tri_mean <- tri_mean(temp$seen)
+    seen_max <- max(temp$seen)
+    seen_min <- min(temp$seen)
+    
+    clicked_tri_mean <- tri_mean(temp$clicked)
+    clicked_max <- max(temp$clicked)
+    clicked_min <- min(temp$clicked)
+    
+    
     percentage_seen <- sum(temp$seen)/sum(temp$delivered) * 100
     percentage_clicked <- sum(temp$clicked)/sum(temp$delivered) * 100
-    percentage_clicked_vs_seen <- sum(temp$clicked)/sum(temp$seen) * 100
-    msg <- tri_mean(temp$msg)
-    age <- tri_mean(temp$age)
-    conv <- tri_mean(temp$conv)
-    reply <- tri_mean(temp$reply)
-    no_reply <- tri_mean(temp$no_reply)
+
+    msg_tri_mean <- tri_mean(temp$msg)
+    msg_min <- min(temp$msg)
+    msg_max <- max(temp$msg)
     
-    result <- c(val, length(temp$delivered), sum_seen, mean_seen, mean_clicked, percentage_seen, percentage_clicked, percentage_clicked_vs_seen, 
-              msg, conv, reply, no_reply, age)
-    write(result, file = paste(current_dir,"analysis_final.csv", sep = ""), append =  TRUE, sep = ",", ncolumns =  length(result))
+    age_tri_mean <- tri_mean(temp$age)
+    age_min <- min(temp$age)
+    age_max <- max(temp$age)
+    
+    conv_tri_mean <- tri_mean(temp$conv)
+    conv_min <- min(temp$conv)
+    conv_max <- max(temp$conv)
+    
+    result <- c(val, length(temp$delivered), seen_min, seen_tri_mean, seen_max, 
+                clicked_min, clicked_tri_mean, clicked_max, percentage_seen, percentage_clicked,
+                msg_min, msg_tri_mean, msg_max, conv_min, conv_tri_mean, conv_max,
+                 age_min, age_tri_mean, age_max)
+ 
+       write(result, file = paste(current_dir,"analysis_final.csv", sep = ""), append =  TRUE, sep = ",", ncolumns =  length(result))
 }
